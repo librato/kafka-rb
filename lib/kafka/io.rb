@@ -14,23 +14,47 @@
 # limitations under the License.
 module Kafka
   module IO
-    attr_accessor :socket, :host, :port
+    attr_accessor :socket, :host, :port, :timeout
 
     HOST = "localhost"
     PORT = 9092
+    TIMEOUT = 10
 
-    def connect(host, port)
+    def connect(host, port, timeout = TIMEOUT)
       raise ArgumentError, "No host or port specified" unless host && port
       self.host = host
       self.port = port
-      self.socket = TCPSocket.new(host, port)
+      self.timeout = timeout
+      self.socket = open()
     end
 
     def reconnect
-      self.socket = TCPSocket.new(self.host, self.port)
+      self.socket = open()
     rescue
       self.disconnect
       raise
+    end
+
+    # Open socket connection, block up till self.timeout secs
+    def open
+      addr = Socket.getaddrinfo(self.host, nil)
+      sock = Socket.new(Socket.const_get(addr[0][0]),
+                        Socket::SOCK_STREAM, 0)
+
+      begin
+        inaddr = Socket.pack_sockaddr_in(self.port, addr[0][3])
+        sock.connect_nonblock(inaddr)
+      rescue Errno::EINPROGRESS
+        resp = ::IO.select(nil, [sock], nil, self.timeout.to_i)
+        if resp.nil?
+          raise Errno::ECONNREFUSED
+        end
+        begin
+          sock.connect_nonblock(inaddr)
+        rescue Errno::EISCONN
+        end
+      end
+      sock
     end
 
     def disconnect

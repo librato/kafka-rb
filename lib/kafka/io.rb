@@ -14,17 +14,19 @@
 # limitations under the License.
 module Kafka
   module IO
-    attr_accessor :socket, :host, :port, :timeout
+    attr_accessor :socket, :host, :port, :timeout, :retries
 
     HOST = "localhost"
     PORT = 9092
     TIMEOUT = 10
+    RETRIES = 1
 
     def connect(host, port, timeout = TIMEOUT)
       raise ArgumentError, "No host or port specified" unless host && port
       self.host = host
       self.port = port
-      self.timeout = timeout
+      self.timeout = timeout.to_i
+      self.retries = RETRIES
       self.socket = open()
     end
 
@@ -45,7 +47,7 @@ module Kafka
         inaddr = Socket.pack_sockaddr_in(self.port, addr[0][3])
         sock.connect_nonblock(inaddr)
       rescue Errno::EINPROGRESS
-        resp = ::IO.select(nil, [sock], nil, self.timeout.to_i)
+        resp = ::IO.select(nil, [sock], nil, self.timeout)
         if resp.nil?
           raise Errno::ECONNREFUSED
         end
@@ -71,7 +73,28 @@ module Kafka
 
     def write(data)
       self.reconnect unless self.socket
-      self.socket.write(data)
+
+      tries = 0
+      total = 0
+      len = data.length
+      while total < len
+        begin
+          tries += 1
+          result = self.socket.write(data[total, len])
+          if result > 0
+            total += result
+          elsif result == 0
+            break
+          end
+        rescue ::IO::WaitWritable, Errno::EINTR
+          ::IO.select(nil, [self.socket], nil, self.timeout)
+          if tries < retries
+            retry
+          else
+            raise
+          end
+        end
+      end
     rescue
       self.disconnect
       raise SocketError, "cannot write: #{$!.message}"

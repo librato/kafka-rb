@@ -24,7 +24,8 @@ module Kafka
       self.partition = options[:partition]  || 0
       host           = options[:host]       || HOST
       port           = options[:port]       || PORT
-      self.connect(host, port)
+      timeout        = options[:timeout]    || TIMEOUT
+      self.connect(host, port, timeout)
     end
 
     def send(messages)

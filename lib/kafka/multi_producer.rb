@@ -17,9 +17,9 @@ module Kafka
     include Kafka::IO
 
     def initialize(options={})
-      self.host = options[:host] || HOST
-      self.port = options[:port] || PORT
-      self.connect(self.host, self.port)
+      host = options[:host] || HOST
+      port = options[:port] || PORT
+      self.connect(host, port)
     end
 
     def send(topic, messages, options={})

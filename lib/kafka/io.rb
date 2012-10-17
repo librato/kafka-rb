@@ -93,6 +93,16 @@ module Kafka
           else
             raise
           end
+        rescue Errno::EPIPE
+          if tries < retries
+            # Try to reconnect
+            self.disconnect
+            self.reconnect
+
+            retry
+          else
+            raise
+          end
         end
       end
     rescue

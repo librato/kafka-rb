@@ -88,13 +88,13 @@ module Kafka
           end
         rescue ::IO::WaitWritable, Errno::EINTR
           ::IO.select(nil, [self.socket], nil, self.timeout)
-          if tries < retries
+          if tries <= retries
             retry
           else
             raise
           end
         rescue Errno::EPIPE
-          if tries < retries
+          if tries <= retries
             # Try to reconnect
             self.disconnect
             self.reconnect

@@ -136,6 +136,9 @@ module Kafka
             self.disconnect
             self.reconnect
 
+            # Reset data pointer so that we don't write
+            # mid-way through a message on reconnect
+            total = 0
             retry
           else
             raise

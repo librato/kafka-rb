@@ -130,7 +130,7 @@ module Kafka
           else
             raise
           end
-        rescue Errno::EPIPE
+        rescue Errno::EPIPE, Errno::ECONNRESET
           if tries <= retries
             # Try to reconnect
             self.disconnect

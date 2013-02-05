@@ -145,9 +145,9 @@ module Kafka
           end
         end
       end
-    rescue
+    rescue => err
       self.disconnect
-      raise SocketError, "cannot write: #{$!.message}"
+      raise SocketError.new("cannot write: #{$!.message}", err)
     end
 
   end

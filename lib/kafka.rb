@@ -31,6 +31,13 @@ require File.join(File.dirname(__FILE__), "kafka", "consumer")
 
 module Kafka
 
-  class SocketError < RuntimeError; end
+  class SocketError < RuntimeError
+    attr_reader :failure
+
+    def initialize(msg, err = nil)
+      super(msg)
+      @failure = err
+    end
+  end
 
 end

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Kafka
+module Kafka7
   module Encoder
     def self.message(message)
       payload = \

@@ -16,7 +16,7 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe ProducerRequest do
-  let(:message) { Kafka::Message.new }
+  let(:message) { Kafka7::Message.new }
   let(:req) { described_class.new("topic", message) }
 
   it "has a topic" do

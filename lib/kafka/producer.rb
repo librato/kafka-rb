@@ -12,10 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-module Kafka
+module Kafka7
   class Producer
 
-    include Kafka::IO
+    include Kafka7::IO
 
     attr_accessor :topic, :partition
 
@@ -32,7 +32,7 @@ module Kafka
     end
 
     def batch(&block)
-      batch = Kafka::Batch.new
+      batch = Kafka7::Batch.new
       block.call( batch )
       self.send(batch.messages)
       batch.messages.clear

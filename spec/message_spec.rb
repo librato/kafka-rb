@@ -32,7 +32,7 @@ describe Message do
     end
 
     it "should set a default value of zero" do
-      @message.magic.should eql(Kafka::Message::MAGIC_IDENTIFIER_DEFAULT)
+      @message.magic.should eql(Kafka7::Message::MAGIC_IDENTIFIER_DEFAULT)
     end
 
     it "should allow to set a custom magic number" do
@@ -65,7 +65,7 @@ describe Message do
   describe "parsing" do
     it "should parse a version-0 message from bytes" do
       bytes = [8, 0, 1120192889, 'ale'].pack('NCNa*')
-      message = Kafka::Message.parse_from(bytes).messages.first
+      message = Kafka7::Message.parse_from(bytes).messages.first
       message.valid?.should eql(true)
       message.magic.should eql(0)
       message.checksum.should eql(1120192889)
@@ -74,7 +74,7 @@ describe Message do
 
     it "should parse a version-1 message from bytes" do
       bytes = [12, 1, 0, 755095536, 'martin'].pack('NCCNa*')
-      message = Kafka::Message.parse_from(bytes).messages.first
+      message = Kafka7::Message.parse_from(bytes).messages.first
       message.should be_valid
       message.magic.should == 1
       message.checksum.should == 755095536
@@ -84,7 +84,7 @@ describe Message do
     it "should raise an error if the magic number is not recognised" do
       bytes = [12, 2, 0, 755095536, 'martin'].pack('NCCNa*') # 2 = some future format that's not yet invented
       lambda {
-        Kafka::Message.parse_from(bytes)
+        Kafka7::Message.parse_from(bytes)
       }.should raise_error(RuntimeError, /Unsupported Kafka message version/)
     end
 
@@ -144,7 +144,7 @@ describe Message do
     it "should raise an error if the compression codec is not supported" do
       bytes = [6, 1, 2, 0, ''].pack('NCCNa*') # 2 = Snappy codec
       lambda {
-        Kafka::Message.parse_from(bytes)
+        Kafka7::Message.parse_from(bytes)
       }.should raise_error(RuntimeError, /Unsupported Kafka compression codec/)
     end
   end

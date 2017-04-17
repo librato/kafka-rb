@@ -25,7 +25,7 @@ describe Consumer do
   describe "Kafka Consumer" do
 
     it "should have a Kafka::RequestType::FETCH" do
-      Kafka::RequestType::FETCH.should eql(1)
+      Kafka7::RequestType::FETCH.should eql(1)
       @consumer.should respond_to(:request_type)
     end
 
@@ -72,8 +72,8 @@ describe Consumer do
     end
 
     it "should encode a request to consume" do
-      bytes = [Kafka::RequestType::FETCH].pack("n") + ["test".length].pack("n") + "test" + [0].pack("N") + [0].pack("q").reverse + [Kafka::Consumer::MAX_SIZE].pack("N")
-      @consumer.encode_request(Kafka::RequestType::FETCH, "test", 0, 0, Kafka::Consumer::MAX_SIZE).should eql(bytes)
+      bytes = [Kafka7::RequestType::FETCH].pack("n") + ["test".length].pack("n") + "test" + [0].pack("N") + [0].pack("q").reverse + [Kafka7::Consumer::MAX_SIZE].pack("N")
+      @consumer.encode_request(Kafka7::RequestType::FETCH, "test", 0, 0, Kafka7::Consumer::MAX_SIZE).should eql(bytes)
     end
 
     it "should read the response data" do
@@ -98,7 +98,7 @@ describe Consumer do
     end
 
     it "should loop and execute a block with the consumed messages" do
-      @consumer.stub!(:consume).and_return([mock(Kafka::Message)])
+      @consumer.stub!(:consume).and_return([mock(Kafka7::Message)])
       messages = []
       messages.should_receive(:<<).exactly(:once).and_return([])
       @consumer.loop do |message|
@@ -109,7 +109,7 @@ describe Consumer do
 
     it "should loop (every N seconds, configurable on polling attribute), and execute a block with the consumed messages" do
       @consumer = Consumer.new({ :polling => 1 })
-      @consumer.stub!(:consume).and_return([mock(Kafka::Message)])
+      @consumer.stub!(:consume).and_return([mock(Kafka7::Message)])
       messages = []
       messages.should_receive(:<<).exactly(:twice).and_return([])
       executed_times = 0
@@ -132,8 +132,8 @@ describe Consumer do
     end
 
     it "should encode an offset request" do
-      bytes = [Kafka::RequestType::OFFSETS].pack("n") + ["test".length].pack("n") + "test" + [0].pack("N") + [-1].pack("q").reverse + [Kafka::Consumer::MAX_OFFSETS].pack("N")
-      @consumer.encode_request(Kafka::RequestType::OFFSETS, "test", 0, -1, Kafka::Consumer::MAX_OFFSETS).should eql(bytes)
+      bytes = [Kafka7::RequestType::OFFSETS].pack("n") + ["test".length].pack("n") + "test" + [0].pack("N") + [-1].pack("q").reverse + [Kafka7::Consumer::MAX_OFFSETS].pack("N")
+      @consumer.encode_request(Kafka7::RequestType::OFFSETS, "test", 0, -1, Kafka7::Consumer::MAX_OFFSETS).should eql(bytes)
     end
 
     it "should parse an offsets response" do

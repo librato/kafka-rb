@@ -13,6 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 require 'rubygems'
-require 'kafka'
+require 'kafka7'
 
-include Kafka
+include Kafka7

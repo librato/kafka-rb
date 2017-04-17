@@ -25,19 +25,19 @@ describe Encoder do
 
   describe "Message Encoding" do
     it "should encode a message" do
-      message = Kafka::Message.new("alejandro")
+      message = Kafka7::Message.new("alejandro")
       check_message(described_class.message(message), message)
     end
 
     it "should encode an empty message" do
-      message = Kafka::Message.new
+      message = Kafka7::Message.new
       check_message(described_class.message(message), message)
     end
 
     it "should encode strings containing non-ASCII characters" do
-      message = Kafka::Message.new("ümlaut")
+      message = Kafka7::Message.new("ümlaut")
       encoded = described_class.message(message)
-      message = Kafka::Message.parse_from(encoded).messages.first
+      message = Kafka7::Message.parse_from(encoded).messages.first
       if RUBY_VERSION[0,3] == "1.8" # Use old iconv on Ruby 1.8 for encoding
         ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
         ic.iconv(message.payload).should eql("ümlaut")
@@ -55,7 +55,7 @@ describe Encoder do
     end
 
     it "should binary encode a request with a message, using a specific wire format" do
-      message = Kafka::Message.new("ale")
+      message = Kafka7::Message.new("ale")
       bytes = described_class.produce("test", 3, message)
       data_size  = bytes[0, 4].unpack("N").shift
       request_id = bytes[4, 2].unpack("n").shift
@@ -83,14 +83,14 @@ describe Encoder do
     end
 
     it "encodes a request with a single topic/partition" do
-      message = Kafka::Message.new("ale")
-      bytes = described_class.multiproduce(Kafka::ProducerRequest.new("test", message))
+      message = Kafka7::Message.new("ale")
+      bytes = described_class.multiproduce(Kafka7::ProducerRequest.new("test", message))
 
       req_length = bytes[0, 4].unpack("N").shift
       req_type = bytes[4, 2].unpack("n").shift
       tp_count = bytes[6, 2].unpack("n").shift
 
-      req_type.should == Kafka::RequestType::MULTIPRODUCE
+      req_type.should == Kafka7::RequestType::MULTIPRODUCE
       tp_count.should == 1
 
       topic_length = bytes[8, 2].unpack("n").shift
@@ -107,14 +107,14 @@ describe Encoder do
     end
 
     it "encodes a request with a single topic/partition but multiple messages" do
-      messages = [Kafka::Message.new("ale"), Kafka::Message.new("beer")]
-      bytes = described_class.multiproduce(Kafka::ProducerRequest.new("test", messages))
+      messages = [Kafka7::Message.new("ale"), Kafka7::Message.new("beer")]
+      bytes = described_class.multiproduce(Kafka7::ProducerRequest.new("test", messages))
 
       req_length = bytes[0, 4].unpack("N").shift
       req_type = bytes[4, 2].unpack("n").shift
       tp_count = bytes[6, 2].unpack("n").shift
 
-      req_type.should == Kafka::RequestType::MULTIPRODUCE
+      req_type.should == Kafka7::RequestType::MULTIPRODUCE
       tp_count.should == 1
 
       topic_length = bytes[8, 2].unpack("n").shift
@@ -132,17 +132,17 @@ describe Encoder do
     end
 
     it "encodes a request with multiple topic/partitions" do
-      messages = [Kafka::Message.new("ale"), Kafka::Message.new("beer")]
+      messages = [Kafka7::Message.new("ale"), Kafka7::Message.new("beer")]
       bytes = described_class.multiproduce([
-          Kafka::ProducerRequest.new("test", messages[0]),
-          Kafka::ProducerRequest.new("topic", messages[1], partition: 1),
+                                               Kafka7::ProducerRequest.new("test", messages[0]),
+                                               Kafka7::ProducerRequest.new("topic", messages[1], partition: 1),
         ])
 
       req_length = bytes[0, 4].unpack("N").shift
       req_type = bytes[4, 2].unpack("n").shift
       tp_count = bytes[6, 2].unpack("n").shift
 
-      req_type.should == Kafka::RequestType::MULTIPRODUCE
+      req_type.should == Kafka7::RequestType::MULTIPRODUCE
       tp_count.should == 2
 
       topic_length = bytes[8, 2].unpack("n").shift

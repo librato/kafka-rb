@@ -14,7 +14,7 @@
 # limitations under the License.
 require File.dirname(__FILE__) + '/spec_helper'
 
-describe Kafka do
+describe Kafka7 do
 
   before(:each) do
   end

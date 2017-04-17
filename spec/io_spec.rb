@@ -15,7 +15,7 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 class IOTest
-  include Kafka::IO
+  include Kafka7::IO
 end
 
 describe IO do
@@ -63,7 +63,7 @@ describe IO do
       length = 200
       @mocked_socket.should_receive(:read).with(length).and_raise(Errno::EAGAIN)
       @io.should_receive(:disconnect)
-      lambda { @io.read(length) }.should raise_error(Kafka::SocketError)
+      lambda { @io.read(length) }.should raise_error(Kafka7::SocketError)
     end
 
     it "should disconnect" do
@@ -81,7 +81,7 @@ describe IO do
       [Errno::ECONNABORTED, Errno::EPIPE, Errno::ECONNRESET].each do |error|
         @mocked_socket.should_receive(:write).exactly(:once).and_raise(error)
         @mocked_socket.should_receive(:close).exactly(:once).and_return(nil)
-        lambda { @io.write("some data to send") }.should raise_error(Kafka::SocketError)
+        lambda { @io.write("some data to send") }.should raise_error(Kafka7::SocketError)
       end
     end
   end

@@ -29,7 +29,7 @@ require File.join(File.dirname(__FILE__), "kafka", "producer")
 require File.join(File.dirname(__FILE__), "kafka", "producer_request")
 require File.join(File.dirname(__FILE__), "kafka", "consumer")
 
-module Kafka
+module Kafka7
 
   class SocketError < RuntimeError
     attr_reader :failure

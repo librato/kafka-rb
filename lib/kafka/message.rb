@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-module Kafka
+module Kafka7
 
   # A message. The format of a message is as follows:
   #
@@ -73,7 +73,7 @@ module Kafka
           payload_size = message_size - 5 # 5 = sizeof(magic) + sizeof(checksum)
           checksum = data[bytes_processed + 5, 4].unpack(VERSION_0_HEADER).shift
           payload  = data[bytes_processed + 9, payload_size]
-          messages << Kafka::Message.new(payload, magic, checksum)
+          messages << Kafka7::Message.new(payload, magic, checksum)
 
         when 1
           # |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  | 10      ...
@@ -85,7 +85,7 @@ module Kafka
 
           case attributes & COMPRESSION_CODEC_MASK
           when 0 # a single uncompressed message
-            messages << Kafka::Message.new(payload, magic, checksum)
+            messages << Kafka7::Message.new(payload, magic, checksum)
           when 1 # a gzip-compressed message set -- parse recursively
             uncompressed = Zlib::GzipReader.new(StringIO.new(payload)).read
             message_set = parse_from(uncompressed)

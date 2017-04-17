@@ -47,14 +47,14 @@ describe Producer do
 
   it "should send messages" do
     @producer.should_receive(:write).and_return(32)
-    message = Kafka::Message.new("ale")
+    message = Kafka7::Message.new("ale")
     @producer.send(message).should eql(32)
   end
 
   describe "Message Batching" do
     it "should batch messages and send them at once" do
-      message1 = Kafka::Message.new("one")
-      message2 = Kafka::Message.new("two")
+      message1 = Kafka7::Message.new("one")
+      message2 = Kafka7::Message.new("two")
       @producer.should_receive(:send).with([message1, message2]).exactly(:once).and_return(nil)
       @producer.batch do |messages|
         messages << message1

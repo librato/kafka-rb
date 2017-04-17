@@ -27,8 +27,8 @@ describe Batch do
     end
 
     it "supports queueing/adding messages to be send" do
-      @batch.messages << mock(Kafka::Message.new("one"))
-      @batch.messages << mock(Kafka::Message.new("two"))
+      @batch.messages << mock(Kafka7::Message.new("one"))
+      @batch.messages << mock(Kafka7::Message.new("two"))
       @batch.messages.length.should eql(2)
     end
   end

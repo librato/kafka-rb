@@ -12,9 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-module Kafka
+module Kafka7
   class MultiProducer
-    include Kafka::IO
+    include Kafka7::IO
 
     def initialize(options={})
       host    = options[:host] || HOST

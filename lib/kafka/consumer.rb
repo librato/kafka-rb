@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module Kafka
+module Kafka7
   class Consumer
 
-    include Kafka::IO
+    include Kafka7::IO
 
     MAX_SIZE = 1024 * 1024        # 1 megabyte
     DEFAULT_POLLING_INTERVAL = 2  # 2 seconds
@@ -49,7 +49,7 @@ module Kafka
     def consume
       self.offset ||= fetch_latest_offset
       send_consume_request
-      message_set = Kafka::Message.parse_from(read_data_response)
+      message_set = Kafka7::Message.parse_from(read_data_response)
       self.offset += message_set.size
       message_set.messages
     rescue SocketError
@@ -63,7 +63,7 @@ module Kafka
 
     def send_offsets_request
       write(encoded_request_size)
-      write(encode_request(Kafka::RequestType::OFFSETS, topic, partition, LATEST_OFFSET, MAX_OFFSETS))
+      write(encode_request(Kafka7::RequestType::OFFSETS, topic, partition, LATEST_OFFSET, MAX_OFFSETS))
     end
 
     def read_offsets_response
@@ -72,7 +72,7 @@ module Kafka
 
     def send_consume_request
       write(encoded_request_size)
-      write(encode_request(Kafka::RequestType::FETCH, topic, partition, offset, max_size))
+      write(encode_request(Kafka7::RequestType::FETCH, topic, partition, offset, max_size))
     end
 
     def read_data_response

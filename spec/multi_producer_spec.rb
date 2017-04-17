@@ -28,18 +28,18 @@ describe MultiProducer do
     end
 
     it "sends single messages" do
-      message = Kafka::Message.new("ale")
-      encoded = Kafka::Encoder.produce("test", 0, message)
+      message = Kafka7::Message.new("ale")
+      encoded = Kafka7::Encoder.produce("test", 0, message)
 
       subject.should_receive(:write).with(encoded).and_return(encoded.length)
       subject.send("test", message, partition: 0).should == encoded.length
     end
 
     it "sends multiple messages" do
-      messages = [Kafka::Message.new("ale"), Kafka::Message.new("beer")]
+      messages = [Kafka7::Message.new("ale"), Kafka7::Message.new("beer")]
       reqs = [
-        Kafka::ProducerRequest.new("topic", messages[0]),
-        Kafka::ProducerRequest.new("topic", messages[1]),
+          Kafka7::ProducerRequest.new("topic", messages[0]),
+          Kafka7::ProducerRequest.new("topic", messages[1]),
       ]
       encoded = Encoder.multiproduce(reqs)
 
